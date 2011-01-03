@@ -80,7 +80,9 @@ module Devise
       def change_password!
         update_ldap(:userpassword => Net::LDAP::Password.generate(:sha, @new_password))
       end
-
+      
+      #Checks if the user is in the required groups to log in
+      #Searches based on LDAP location rather than on Active Directory Memberships
       def in_required_groups?     
         return true unless ::Devise.ldap_check_group_membership
         

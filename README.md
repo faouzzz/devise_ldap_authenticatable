@@ -61,7 +61,6 @@ Options:
                                # Default: true
     [--add-rescue]             # Update Application Controller with resuce_from for DeviseLdapAuthenticatable::LdapException
                                # Default: true
-    [--advanced]               # Add advanced config options to the devise initializer
 
 
 Usage
@@ -106,7 +105,7 @@ In initializer  `config/initializers/devise.rb` :
 Advanced Configuration
 ----------------------
 
-These parameters will be added to `config/initializers/devise.rb` when you pass the `--advanced` switch to the generator:
+These parameters will be added to `config/initializers/devise.rb` 
 
 * ldap\_auth\_username\_builder _(default: `Proc.new() {|attribute, login, ldap| "#{attribute}=#{login},#{ldap.base}" }`)_
   * You can pass a proc to the username option to explicitly specify the format that you search for a users' DN on your LDAP server.
