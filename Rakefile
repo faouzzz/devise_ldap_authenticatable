@@ -39,7 +39,7 @@ begin
   Jeweler::Tasks.new do |gemspec|
     gemspec.name = "devise_activedirectory_authenticatable"
     gemspec.summary = "Active Directory authentication module for Devise"
-    gemspec.description = "Active Directory authentication module for Devise"
+    gemspec.description = "Active Directory authentication module for Devise, based off of LDAP Authentication"
     gemspec.email = "ajrkerr@gmail.com"
     gemspec.homepage = "http://github.com/ajrkerr/devise_activedirectory_authenticatable"
     gemspec.authors = ["Adam Kerr"]
