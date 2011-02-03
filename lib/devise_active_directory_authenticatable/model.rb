@@ -33,7 +33,7 @@ module Devise
       #Updates the password in the LDAP
       def reset_password!(new_password, new_password_confirmation)
         if new_password == new_password_confirmation && ::Devise.ldap_update_password
-          Devise::LdapAdapter.update_password(login_with, new_password)
+          Devise::ActiveDirectoryAdapter.update_password(login_with, new_password)
         end
         clear_reset_password_token if valid?
         save
@@ -49,7 +49,7 @@ module Devise
       end
       
       def ldap_groups
-        Devise::LdapAdapter.get_groups(login_with)
+        Devise::ActiveDirectoryAdapter.get_groups(login_with)
       end
 
       module ClassMethods
