@@ -1,6 +1,6 @@
 module DeviseActiveDirectoryAuthenticatable
 
-  class LdapException < Exception
+  class ActiveDirectoryException < Exception
   end
 
 end

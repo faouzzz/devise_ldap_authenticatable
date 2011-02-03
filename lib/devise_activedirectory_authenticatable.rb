@@ -1,5 +1,6 @@
 # encoding: utf-8
 require 'devise'
+require 'active_directory'
 
 require 'devise_activedirectory_authenticatable/exception'
 require 'devise_activedirectory_authenticatable/logger'
@@ -9,6 +10,9 @@ require 'devise_activedirectory_authenticatable/routes'
 
 # Get ldap information from config/ldap.yml now
 module Devise
+
+  ##TODO Revise these options/vars and their corresponding generator
+
   # Log LDAP queries to the Rails logger
   mattr_accessor :ldap_logger
   @@ldap_logger = true
@@ -48,7 +52,7 @@ end
 
 # Add ldap_authenticatable strategy to defaults.
 #
-Devise.add_module(:ldap_authenticatable,
+Devise.add_module(:ad_user,
                   :route => :session, ## This will add the routes, rather than in the routes.rb
                   :strategy   => true,
                   :controller => :sessions,

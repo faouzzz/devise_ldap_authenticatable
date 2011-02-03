@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{devise_activedirectory_authenticatable}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Adam Kerr"]
@@ -20,17 +20,7 @@ Gem::Specification.new do |s|
     "README.md",
     "Rakefile",
     "VERSION",
-    "lib/devise_ldap_authenticatable.rb",
-    "lib/devise_ldap_authenticatable/exception.rb",
-    "lib/devise_ldap_authenticatable/ldap_adapter.rb",
-    "lib/devise_ldap_authenticatable/logger.rb",
-    "lib/devise_ldap_authenticatable/model.rb",
-    "lib/devise_ldap_authenticatable/routes.rb",
-    "lib/devise_ldap_authenticatable/schema.rb",
-    "lib/devise_ldap_authenticatable/strategy.rb",
-    "lib/devise_ldap_authenticatable/version.rb",
-    "lib/generators/devise_ldap_authenticatable/install_generator.rb",
-    "lib/generators/devise_ldap_authenticatable/templates/ldap.yml",
+    "devise_activedirectory_authenticatable.gemspec",
     "rails/init.rb",
     "test/devise_ldap_authenticatable_test.rb",
     "test/ldap/base.ldif",

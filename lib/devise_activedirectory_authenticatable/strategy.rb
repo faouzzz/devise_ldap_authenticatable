@@ -33,4 +33,4 @@ module Devise
   end
 end
 
-Warden::Strategies.add(:activedirectory_authenticatable, Devise::Strategies::ActiveDirectoryAuthenticatable)
+Warden::Strategies.add(:ad_user, Devise::Strategies::ActiveDirectoryAuthenticatable)
