@@ -1,4 +1,4 @@
-module DeviseLdapAuthenticatable
+module DeviseActiveDirectoryAuthenticatable
 
   class Logger    
     def self.send(message, logger = Rails.logger)

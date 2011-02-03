@@ -1,11 +1,11 @@
 # encoding: utf-8
 require 'devise'
 
-require 'devise_ldap_authenticatable/exception'
-require 'devise_ldap_authenticatable/logger'
-require 'devise_ldap_authenticatable/schema'
-require 'devise_ldap_authenticatable/ldap_adapter'
-require 'devise_ldap_authenticatable/routes'
+require 'devise_activedirectory_authenticatable/exception'
+require 'devise_activedirectory_authenticatable/logger'
+require 'devise_activedirectory_authenticatable/schema'
+require 'devise_activedirectory_authenticatable/ldap_adapter'
+require 'devise_activedirectory_authenticatable/routes'
 
 # Get ldap information from config/ldap.yml now
 module Devise
@@ -52,4 +52,4 @@ Devise.add_module(:ldap_authenticatable,
                   :route => :session, ## This will add the routes, rather than in the routes.rb
                   :strategy   => true,
                   :controller => :sessions,
-                  :model  => 'devise_ldap_authenticatable/model')
+                  :model  => 'devise_activedirectory_authenticatable/model')

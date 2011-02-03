@@ -2,7 +2,7 @@ require "net/ldap"
 
 module Devise
 
-  module LdapAdapter
+  module ActiveDirectoryAdapter
     
     def self.valid_credentials?(login, password_plaintext)
       options = {:login => login, 

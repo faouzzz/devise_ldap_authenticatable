@@ -1,4 +1,4 @@
-module DeviseLdapAuthenticatable
-  VERSION = "0.4.6"
+module DeviseActiveDirectoryAuthenticatable
+  VERSION = "0.0.1"
 end
 
