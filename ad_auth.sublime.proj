@@ -1,0 +1,200 @@
+{
+	"buffers":
+	[
+		{
+			"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable.rb",
+			"settings":
+			{
+				"buffer_size": 2504,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
+			"settings":
+			{
+				"buffer_size": 2802,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"file_history":
+	[
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_activedirectory_authenticatable/model.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_activedirectory_authenticatable/exception.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_activedirectory_authenticatable/strategy.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/Rakefile",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/devise_activedirectory_authenticatable.gemspec",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_activedirectory_authenticatable.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/rails/init.rb",
+		"/Users/ajrkerr/test4.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_ldap_authenticatable/strategy.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_ldap_authenticatable.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_ldap_authenticatable/ldap_adapter.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/MIT-LICENSE",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/devise_ldap_authenticatable.gemspec",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_ldap_authenticatable/logger.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_ldap_authenticatable/exception.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_ldap_authenticatable/model.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_ldap_authenticatable/version.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/VERSION"
+	],
+	"find_in_files":
+	{
+		"include_history":
+		[
+			""
+		],
+		"location_history":
+		[
+			"<open folders>"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"strategy",
+			"ldap",
+			"devise_active",
+			"ActiveDirectoryAuthenticatable",
+			"deviseadauthenti",
+			"DeviseLdapAuthenticatable"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"DeviseActiveDirectoryAuthenticatable"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer": false,
+		"whole_word": false,
+		"wrap": true
+	},
+	"folders":
+	{
+		"mount_points":
+		[
+			"/Users/ajrkerr/github/devise_active_directory_authenticatable"
+		]
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable.rb",
+					"settings":
+					{
+						"buffer_size": 2504,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2195,
+								2203
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 110,
+						"zoom_level": 1
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
+					"settings":
+					{
+						"buffer_size": 2802,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								475,
+								475
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Ruby/Ruby.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0,
+						"translation.y": 0,
+						"zoom_level": 1
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0,
+			0.609609,
+			1
+		],
+		"rows":
+		[
+			0,
+			1
+		]
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0,
+		"selected_items":
+		[
+		],
+		"width": 0
+	},
+	"show_minimap": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 328,
+	"status_bar_visible": true
+}
