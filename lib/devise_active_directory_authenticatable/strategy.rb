@@ -27,6 +27,7 @@ module Devise
         end
 
         def valid_params?
+          raise "Please enter a password" unless params[scope][:password].present?
           params[scope] && params[scope][:password].present?
         end
     end

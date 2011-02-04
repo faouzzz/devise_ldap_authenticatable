@@ -2,18 +2,18 @@
 	"buffers":
 	[
 		{
-			"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable.rb",
+			"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
 			"settings":
 			{
-				"buffer_size": 2504,
+				"buffer_size": 3166,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
+			"file": "/Users/ajrkerr/test3.rb",
 			"settings":
 			{
-				"buffer_size": 2802,
+				"buffer_size": 1404,
 				"line_ending": "Unix"
 			}
 		}
@@ -21,6 +21,8 @@
 	"build_system": "",
 	"file_history":
 	[
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable.rb",
+		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
 		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_activedirectory_authenticatable/model.rb",
 		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_activedirectory_authenticatable/exception.rb",
 		"/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_activedirectory_authenticatable/strategy.rb",
@@ -87,23 +89,23 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable.rb",
+					"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
 					"settings":
 					{
-						"buffer_size": 2504,
+						"buffer_size": 3166,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2195,
-								2203
+								1907,
+								1907
 							]
 						],
 						"settings":
@@ -113,25 +115,30 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0,
-						"translation.y": 110,
+						"translation.y": 477,
 						"zoom_level": 1
 					},
 					"type": "text"
-				},
+				}
+			]
+		},
+		{
+			"sheets":
+			[
 				{
 					"buffer": 1,
-					"file": "/Users/ajrkerr/github/devise_activedirectory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
+					"file": "/Users/ajrkerr/test3.rb",
 					"settings":
 					{
-						"buffer_size": 2802,
+						"buffer_size": 1404,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								475,
-								475
+								580,
+								656
 							]
 						],
 						"settings":
@@ -146,11 +153,6 @@
 					},
 					"type": "text"
 				}
-			]
-		},
-		{
-			"sheets":
-			[
 			]
 		}
 	],
@@ -174,7 +176,7 @@
 		"cols":
 		[
 			0,
-			0.609609,
+			0.550129,
 			1
 		],
 		"rows":
@@ -195,6 +197,6 @@
 	"show_minimap": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 328,
+	"side_bar_width": 341,
 	"status_bar_visible": true
 }

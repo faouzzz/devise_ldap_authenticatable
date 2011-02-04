@@ -43,8 +43,8 @@ begin
     gemspec.email = "ajrkerr@gmail.com"
     gemspec.homepage = "http://github.com/ajrkerr/devise_activedirectory_authenticatable"
     gemspec.authors = ["Adam Kerr"]
-    gemspec.add_runtime_dependency "devise", "1.1.5"
-    gemspec.add_runtime_dependency "activedirectory", "1.0.1"
+    gemspec.add_dependency "devise", ">= 1.1.5"
+    gemspec.add_dependency "activedirectory", ">= 1.0.4"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

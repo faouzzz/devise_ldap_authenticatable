@@ -13,6 +13,16 @@ module Devise
 
   ##TODO Revise these options/vars and their corresponding generator
 
+  mattr_accessor :ad_settings
+  @@ad_settings = {
+    :host => 'msc-svr-dcr-02.magiseal.local',
+    :port => 389,
+    :base => 'dc=magiseal,dc=local'
+  }
+
+  mattr_accessor :ad_create_user
+  @@ad_create_user = true
+
   # Log LDAP queries to the Rails logger
   mattr_accessor :ldap_logger
   @@ldap_logger = true

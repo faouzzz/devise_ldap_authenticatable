@@ -10,6 +10,10 @@ module Devise
     #    User.find(1).valid_password?('password123')         # returns true/false
     #
     module AdUser
+
+      #Remove this before production
+      Logger = DeviseActiveDirectoryAuthenticatable::Logger
+
       extend ActiveSupport::Concern
       
       included do
@@ -17,7 +21,6 @@ module Devise
         attr_reader :current_password, :password
         #Why do we need to store this?
         attr_accessor :password_confirmation
-        attr_reader :dn
       end
       
       # Should this exist?  Shouldn't it reset the LDAP password?
@@ -53,26 +56,65 @@ module Devise
       end
 
       module ClassMethods
+
         # Authenticate a user based on configured attribute keys. Returns the
         # authenticated user if it's valid or nil.
-        def authenticate_with_ldap(attributes={}) 
+        def authenticate_with_activedirectory(attributes={}) 
           @login_with = ::Devise.authentication_keys.first
+
           return nil unless attributes[@login_with].present? 
 
-          # resource = find_for_ldap_authentication(conditions)
+          username = attributes[@login_with]
+          password = attributes[:password]
+
+          ::Devise.ad_settings.merge!({ 
+              :auth => {
+                :method => :simple,
+                :username => username,
+                :password => password
+              }
+            })
+
+          #Connect to AD
+          ActiveDirectory::Base.setup(::Devise.ad_settings)
+
+          #Try to find the user in the AD
+          user = ActiveDirectory::User.find(:first,
+              :userPrincipalName => username)
+
+          raise "Invalid User.  Could not connect with AD." unless user
+
+          #Try to find them in the database
           resource = scoped.where(@login_with => attributes[@login_with]).first
-                    
-          if (resource.blank? and ::Devise.ldap_create_user)
-            resource = new
-            resource[@login_with] = attributes[@login_with]            
+
+          if resource.blank? and ::Devise.ad_create_user
+            resource = create_from_ad(user)
+            resource[@login_with] = attributes[@login_with]
           end
-                    
-          if resource.try(:valid_ldap_authentication?, attributes[:password])
+          
+          if user.guid == resource.guid
             resource.save if resource.new_record?
             return resource
-          else
-            return nil
           end
+
+          return nil
+          # if resource.try(:valid_ldap_authentication?, attributes[:password])
+          #   resource.save if resource.new_record?
+          #   return resource
+          # else
+          #   return nil
+          # end
+        end
+
+
+        def create_from_ad(user)
+          resource = new
+          resource.guid = user.guid
+          resource.dn = user.dn
+          resource.firstname = user.givenName
+          resource.lastname = user.sn
+          #resource[@login_with] = attributes[@login_with] 
+          return resource
         end
         
         #What is this for?
