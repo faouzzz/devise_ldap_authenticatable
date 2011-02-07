@@ -4,7 +4,7 @@ require 'active_directory'
 
 require 'devise_active_directory_authenticatable/exception'
 require 'devise_active_directory_authenticatable/logger'
-require 'devise_active_directory_authenticatable/schema'
+#require 'devise_active_directory_authenticatable/schema'
 require 'devise_active_directory_authenticatable/ldap_adapter'
 require 'devise_active_directory_authenticatable/routes'
 
