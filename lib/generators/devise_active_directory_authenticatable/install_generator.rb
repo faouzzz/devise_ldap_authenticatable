@@ -46,16 +46,17 @@ module DeviseActiveDirectoryAuthenticatable
   # }
 
   ##Username attribute
+  ##Maps to :login_with in the devise configuration
   # config.ad_username = :userPrincipalName
 
   ##Create the user if they're not found
+  ##If this is false, you will need to create the user object before they will be allowed to login
   # config.ad_create_user = true
 
   ##Log LDAP queries to the Rails logger
   # config.ad_logger = true
 
         eof
-      end
       
       settings
     end

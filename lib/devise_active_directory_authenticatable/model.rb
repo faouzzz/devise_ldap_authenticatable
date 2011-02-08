@@ -3,15 +3,8 @@ require 'devise_active_directory_authenticatable/exception'
 
 module Devise
   module Models
-    # LDAP Module, responsible for validating the user credentials via LDAP.
+    # Active Directory Module, responsible for validating the user credentials via Active Directory
     #
-    # Examples:
-    #
-    #    User.authenticate('email@test.com', 'password123')  # returns authenticated user or nil
-    #    User.find(1).valid_password?('password123')         # returns true/false
-    #
-    # By convention guid is human readable hex encoding
-    # objectGUID is binary encoding madness
     module AdUser
 
       #Remove this before production
