@@ -28,8 +28,7 @@ module Devise
 
         def valid_params?
           @login_with = ::Devise.authentication_keys.first
-          raise "Must have both a username and password" unless params[scope][@login_with].present? and params[scope][:password].present?
-          params[scope] && params[scope][:password].present?
+          params[scope] && params[scope][@login_with].present? && params[scope][:password].present?
         end
     end
   end
