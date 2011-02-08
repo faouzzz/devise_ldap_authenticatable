@@ -1,4 +1,5 @@
 require 'devise_active_directory_authenticatable/strategy'
+require 'devise_active_directory_authenticatable/exception'
 
 module Devise
   module Models
@@ -9,51 +10,56 @@ module Devise
     #    User.authenticate('email@test.com', 'password123')  # returns authenticated user or nil
     #    User.find(1).valid_password?('password123')         # returns true/false
     #
+    # By convention guid is human readable hex encoding
+    # objectGUID is binary encoding madness
     module AdUser
 
       #Remove this before production
+      ADConnect = DeviseActiveDirectoryAuthenticatable
+      ADUser = ActiveDirectory::User
       Logger = DeviseActiveDirectoryAuthenticatable::Logger
 
       extend ActiveSupport::Concern
-      
-      included do
-        #What are these for, why would we need to read them?
-        attr_reader :current_password, :password
-        #Why do we need to store this?
-        attr_accessor :password_confirmation
-      end
-      
-      # Should this exist?  Shouldn't it reset the LDAP password?
-      # Why would we be storing the password in plaintext?
-      def password=(new_password)
-        @password = new_password
-      end
+
 
       def login_with
         self[::Devise.authentication_keys.first]
       end
+
+      def objectGuid
+        guid.to_a.pack("H*")
+      end
       
       #Updates the password in the LDAP
       def reset_password!(new_password, new_password_confirmation)
-        if new_password == new_password_confirmation && ::Devise.ldap_update_password
-          Devise::ActiveDirectoryAdapter.update_password(login_with, new_password)
-        end
-        clear_reset_password_token if valid?
-        save
-      end      
+        # if new_password == new_password_confirmation && ::Devise.ldap_update_password
+        #   Devise::ActiveDirectoryAdapter.update_password(login_with, new_password)
+        # end
+        # clear_reset_password_token if valid?
+        # save
+      end
 
-      # Checks if a resource is valid upon authentication.
-      def valid_ldap_authentication?(password)
-        if Devise::LdapAdapter.valid_credentials?(login_with, password)
-          return true
-        else
-          return false
+
+      #Store attributes
+      def update_from_activedirectory(params = {})
+        params[:guid] = self.guid if params.empty?
+        params[:user] ||= User.find_in_activedirectory(params)
+        user = params[:user]
+
+        return false if user.nil?
+
+        Logger.send "Updating #{params.inspect}"
+
+        ::Devise.ad_attr_mapping.each do |user_attr, active_directory_attr|
+          self[user_attr] = user.send(active_directory_attr)
         end
       end
-      
-      def ldap_groups
-        Devise::ActiveDirectoryAdapter.get_groups(login_with)
+
+      def login
+        update_from_activedirectory
+        super if defined? super 
       end
+
 
       module ClassMethods
 
@@ -62,66 +68,75 @@ module Devise
         def authenticate_with_activedirectory(attributes={}) 
           @login_with = ::Devise.authentication_keys.first
 
-          return nil unless attributes[@login_with].present? 
+          raise ADConnect::ActiveDirectoryException, "Annonymous binds are not permitted." unless attributes[@login_with].present?
 
           username = attributes[@login_with]
           password = attributes[:password]
 
-          ::Devise.ad_settings.merge!({ 
-              :auth => {
-                :method => :simple,
-                :username => username,
-                :password => password
-              }
-            })
+          Logger.send "Attempting to login :#{@login_with} => #{username}"
 
-          #Connect to AD
-          ActiveDirectory::Base.setup(::Devise.ad_settings)
+          ad_connect(:username => username, :password => password)
 
           #Try to find the user in the AD
-          user = ActiveDirectory::User.find(:first,
-              :userPrincipalName => username)
-
-          raise "Invalid User.  Could not connect with AD." unless user
+          user = find_in_activedirectory(:username => username)
+          
+          Logger.send "Attempt Result: #{ActiveDirectory::Base.error}"
+          raise ADConnect::ActiveDirectoryException, "Could not connect with Active Directory.  Check your username, password, and ensure that your account is not locked." unless user
 
           #Try to find them in the database
           resource = scoped.where(@login_with => attributes[@login_with]).first
 
           if resource.blank? and ::Devise.ad_create_user
-            resource = create_from_ad(user)
+            Logger.send "Creating new user in database"
+
+            resource = new
+            resource.update_from_activedirectory(:user => user)
             resource[@login_with] = attributes[@login_with]
+            Logger.send "Created: #{resource.inspect}"
           end
           
-          if user.guid == resource.guid
+          Logger.send "Checking [#{user.guid.inspect}] == [#{resource.guid.inspect}]"
+
+          # Check to see if we have the same user
+          if user.guid.first == resource.guid
             resource.save if resource.new_record?
+
+            Logger.send "Trigging login handler for #{username}"
+            resource.login if resource.respond_to?(:login)
             return resource
+          else
+            raise ADConnect::ActiveDirectoryException, "Invalid Username or Password.  Possible database inconsistency."
           end
-
-          return nil
-          # if resource.try(:valid_ldap_authentication?, attributes[:password])
-          #   resource.save if resource.new_record?
-          #   return resource
-          # else
-          #   return nil
-          # end
         end
 
+        #Search based on GUID, DN or Username primarily
+        def find_in_activedirectory(params = {})
+          #Reverse the mappings
+          params[::Devise.ad_username] ||= params[:username] if params[:username].present?
+          params[::Devise.ad_username] ||= params[@login_with] if params[@login_with].present?
+          params[:objectGUID] ||= params[:guid].to_a.pack("H*") if params[:guid].present?
 
-        def create_from_ad(user)
-          resource = new
-          resource.guid = user.guid
-          resource.dn = user.dn
-          resource.firstname = user.givenName
-          resource.lastname = user.sn
-          #resource[@login_with] = attributes[@login_with] 
-          return resource
+          params.delete(:guid)
+          params.delete(:username)
+          params.delete(@login_with)
+
+          Logger.send "Searching for #{params.inspect}"
+
+          user = ADUser.find(:first, params)
+          Logger.send "Found: #{user}"
+
+          return user
         end
-        
-        #What is this for?
-        def update_with_password(resource)
-          puts "UPDATE_WITH_PASSWORD: #{resource.inspect}"
+
+        private
+
+        def ad_connect(params = {})
+          #Used for username and password
+          ::Devise.ad_settings[:auth].merge! params
+
+          ActiveDirectory::Base.setup(::Devise.ad_settings)
+          Logger.send "Connection Result: #{ActiveDirectory::Base.error}"
         end
-        
       end
     end
   end

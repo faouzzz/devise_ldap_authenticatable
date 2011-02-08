@@ -4,33 +4,44 @@ require 'active_directory'
 
 require 'devise_active_directory_authenticatable/exception'
 require 'devise_active_directory_authenticatable/logger'
-#require 'devise_active_directory_authenticatable/schema'
-require 'devise_active_directory_authenticatable/ldap_adapter'
-require 'devise_active_directory_authenticatable/routes'
 
 # Get ldap information from config/ldap.yml now
 module Devise
 
   ##TODO Revise these options/vars and their corresponding generator
 
+  #Active Directory settings
   mattr_accessor :ad_settings
   @@ad_settings = {
     :host => 'msc-svr-dcr-02.magiseal.local',
     :port => 389,
-    :base => 'dc=magiseal,dc=local'
+    :base => 'dc=magiseal,dc=local',
+    :auth => {
+      :method => :simple
+    }
   }
 
+  #Attribute mapping for user object
+  mattr_accessor :ad_attr_mapping
+  @@ad_attr_mapping = {
+    :guid => :guid,
+    :dn => :dn,
+    :firstname => :givenName,
+    :lastname => :sn,
+    :username => :userPrincipalName
+  }
+
+  #Username attribute
+  mattr_accessor :ad_username
+  @@ad_username = :userPrincipalName
+
+  #Create the user if they're not found
   mattr_accessor :ad_create_user
   @@ad_create_user = true
 
   # Log LDAP queries to the Rails logger
-  mattr_accessor :ldap_logger
-  @@ldap_logger = true
-  
-  # If set to true, all valid LDAP users will be allowed to login and an appropriate user record will be created. 
-  # If set to false, you will have to create the user record before they will be allowed to login.
-  mattr_accessor :ldap_create_user
-  @@ldap_create_user = false
+  mattr_accessor :ad_logger
+  @@ad_logger = true
   
   # Location of LDAP configuration file
   mattr_accessor :ldap_config
