@@ -29,7 +29,8 @@ module DeviseActiveDirectoryAuthenticatable
   # config.ad_settings = {
   #   :host => 'domain-controller.example.local',
   #   :base => 'dc=example,dc=local',
-  #   :port => 389,
+  #   :port => 636,
+  #   :encryption => :simple_tls,
   #   :auth => {
   #     :method => :simple
   #   }
