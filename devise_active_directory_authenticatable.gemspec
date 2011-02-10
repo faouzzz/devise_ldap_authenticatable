@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{devise_active_directory_authenticatable}
-  s.version = "0.1.1"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Adam Kerr"]
@@ -25,7 +25,9 @@ Gem::Specification.new do |s|
     "lib/devise_active_directory_authenticatable.rb",
     "lib/devise_active_directory_authenticatable/exception.rb",
     "lib/devise_active_directory_authenticatable/logger.rb",
-    "lib/devise_active_directory_authenticatable/model.rb",
+    "lib/devise_active_directory_authenticatable/models/ad_group.rb",
+    "lib/devise_active_directory_authenticatable/models/ad_object.rb",
+    "lib/devise_active_directory_authenticatable/models/ad_user.rb",
     "lib/devise_active_directory_authenticatable/strategy.rb",
     "lib/generators/devise_active_directory_authenticatable/install_generator.rb",
     "rails/init.rb"
@@ -40,14 +42,14 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<devise>, [">= 1.1.5"])
-      s.add_runtime_dependency(%q<active_directory>, [">= 1.1.0"])
+      s.add_runtime_dependency(%q<active_directory>, [">= 1.2.0"])
     else
       s.add_dependency(%q<devise>, [">= 1.1.5"])
-      s.add_dependency(%q<active_directory>, [">= 1.1.0"])
+      s.add_dependency(%q<active_directory>, [">= 1.2.0"])
     end
   else
     s.add_dependency(%q<devise>, [">= 1.1.5"])
-    s.add_dependency(%q<active_directory>, [">= 1.1.0"])
+    s.add_dependency(%q<active_directory>, [">= 1.2.0"])
   end
 end
 
