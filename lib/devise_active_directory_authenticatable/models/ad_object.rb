@@ -11,9 +11,9 @@ module Devise
 
       included do 
         #Serialize all binary fields
-        ::Devise.ad_special_fields[:binary].each do |field|
-          serialize field
-        end
+        # ::Devise.ad_special_fields[:binary].each do |field|
+        #   serialize field
+        # end
       end
 
       ## Devise key
@@ -35,10 +35,6 @@ module Devise
         ::Devise.ad_attr_mapping.each do |user_attr, active_directory_attr|
           self[user_attr] = user.send(active_directory_attr)
         end
-      end
-
-      def guid
-        ActiveDirectory::Binary.decode(objectGUID)
       end
 
 

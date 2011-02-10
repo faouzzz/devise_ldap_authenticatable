@@ -14,10 +14,6 @@ module Devise
 
       extend ActiveSupport::Concern
 
-      included do 
-        serialize :objectGUID
-      end
-
       ## Devise key
       def login_with
         self[::Devise.authentication_keys.first]
@@ -35,6 +31,7 @@ module Devise
 
         #Grab attributes from Devise mapping
         ::Devise.ad_user_mapping.each do |user_attr, active_directory_attr|
+          Logger.send "Settings #{user_attr} = #{user.send(active_directory_attr)}"
           self[user_attr] = user.send(active_directory_attr)
         end
       end
@@ -73,8 +70,8 @@ module Devise
             user.sync_with_activedirectory(:user => ad_user)
             Logger.send "Created: #{user.inspect}"
           end
-          
-          Logger.send "Checking: #{ad_user.objectGUID} == #{user.objectGUID}"
+          Logger.send "User: #{user.inspect}"
+          Logger.send "Checking: #{ad_user.objectGUID.inspect} == #{user.objectGUID.inspect}"
           # Check to see if we have the same user
           if ad_user == user
             user.save if user.new_record?

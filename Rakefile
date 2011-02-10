@@ -22,7 +22,7 @@ begin
     gemspec.homepage = "http://github.com/ajrkerr/devise_activedirectory_authenticatable"
     gemspec.authors = ["Adam Kerr"]
     gemspec.add_dependency "devise", ">= 1.1.5"
-    gemspec.add_dependency "active_directory", ">= 1.1.0"
+    gemspec.add_dependency "active_directory", ">= 1.2.0"
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError

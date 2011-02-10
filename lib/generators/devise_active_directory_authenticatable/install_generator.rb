@@ -37,7 +37,6 @@ module DeviseActiveDirectoryAuthenticatable
   # }
 
   ##Attribute mapping for user object
-  # mattr_accessor :ad_attr_mapping
   # config.ad_attr_mapping = {
   #   :objectGUID => :objectGUID, #Required
   #   :username => :userPrincipalName,

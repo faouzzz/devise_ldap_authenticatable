@@ -14,10 +14,6 @@ module Devise
 
       extend ActiveSupport::Concern
 
-      included do 
-        serialize :objectGUID
-      end
-
       ## Devise key
       def login_with
         self[::Devise.authentication_keys.first]

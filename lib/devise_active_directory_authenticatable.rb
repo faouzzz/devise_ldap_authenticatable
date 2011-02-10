@@ -8,8 +8,6 @@ require 'devise_active_directory_authenticatable/logger'
 # Get ldap information from config/ldap.yml now
 module Devise
 
-  ##TODO Revise these options/vars and their corresponding generator
-
   #Active Directory settings
   mattr_accessor :ad_settings
   @@ad_settings = {
@@ -23,13 +21,24 @@ module Devise
   }
 
   #Attribute mapping for user object
-  mattr_accessor :ad_attr_mapping
-  @@ad_attr_mapping = {
+  mattr_accessor :ad_user_mapping
+  @@ad_user_mapping = {
     :objectGUID => :objectGUID, #Required
     :username => :userPrincipalName,
     :dn => :dn,
     :firstname => :givenName,
     :lastname => :sn,
+    :whenChanged => :whenChanged,
+  }
+
+  #Attribute mapping for group objects
+  mattr_accessor :ad_group_mapping
+  @@ad_group_mapping = {
+    :objectGUID => :objectGUID, #Required
+    :dn => :dn,
+    :name => :name,
+    :description => :description,
+    :whenCreated => :whenChanged,
   }
 
   #Username attribute
@@ -51,4 +60,7 @@ Devise.add_module(:ad_user,
                   :route => :session, ## This will add the routes, rather than in the routes.rb
                   :strategy   => true,
                   :controller => :sessions,
-                  :model  => 'devise_active_directory_authenticatable/model')
+                  :model  => 'devise_active_directory_authenticatable/models/ad_user')
+
+Devise.add_module(:ad_group,
+                  :model => 'devise_active_directory_authenticatable/models/ad_group')
