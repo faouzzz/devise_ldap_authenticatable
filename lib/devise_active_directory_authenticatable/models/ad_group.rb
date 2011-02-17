@@ -14,10 +14,6 @@ module Devise
           ActiveDirectory::Group
         end
 
-        def devise_model
-          AdGroup
-        end
-
         def sync_all
           #return false unless connected_to_activedirectory?
           find_or_create_from_activedirectory.each do |gp|

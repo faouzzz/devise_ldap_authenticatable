@@ -36,10 +36,6 @@ module Devise
           ActiveDirectory::User
         end
 
-        def devise_model
-          AdUser
-        end
-
         # Authenticate a user based on configured attribute keys. Returns the
         # authenticated user if it's valid or nil.
         def authenticate_with_activedirectory(attributes={}) 

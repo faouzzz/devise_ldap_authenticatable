@@ -34,11 +34,13 @@ module Devise
 
     module ClassMethods
 
-      # def devise_model
-      #   self.ancestors.each do |mod|
-      #     return mod if mod.include? self.class
-      #   end
-      # end
+      def devise_model
+        self.ancestors.each do |mod|
+          if mod.is_a? Module
+            return mod if mod.include? self.class
+          end
+        end
+      end
 
       def devise_model_name
         devise_model.name[/.*::(.*)/, 1]
