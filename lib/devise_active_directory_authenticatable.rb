@@ -20,30 +20,42 @@ module Devise
     }
   }
 
-  #Attribute mapping for user object
-  mattr_accessor :ad_user_mapping
-  @@ad_user_mapping = {
-    :objectGUID => :objectGUID, #Required
-    :username => :userPrincipalName,
-    :dn => :dn,
-    :firstname => :givenName,
-    :lastname => :sn,
-    :whenChanged => :whenChanged,
+  #Attribute mapping for AD to Rails objects
+  # :object => { :rails_attr => :ad_attr }
+  mattr_accessor :ad_attr_mapping
+  @@ad_attr_mapping = {
+    #Attribute mapping for user object
+    :AdUser => {
+      #Attributes are lowercase
+      :objectguid => :objectguid, #Required
+      :username => :userprincipalname,
+      :dn => :dn,
+      :firstname => :givenName,
+      :lastname => :sn,
+      :whenchanged => :whenchanged,
+      :whencreated => :whencreated,
+    },
+
+    #Attribute mapping for group objects
+    :AdGroup => {
+      #Attributes are lowercase
+      :objectguid => :objectguid, #Required
+      :dn => :dn,
+      :name => :name,
+      :description => :description,
+      :whencreated => :whencreated,
+      :whenchanged => :whenchanged,
+    }
   }
 
-  #Attribute mapping for group objects
-  mattr_accessor :ad_group_mapping
-  @@ad_group_mapping = {
-    :objectGUID => :objectGUID, #Required
-    :dn => :dn,
-    :name => :name,
-    :description => :description,
-    :whenCreated => :whenChanged,
-  }
-
-  #Username attribute
+  #Username attribute used for logging in
+  #Will be automagicaly mapped to authentication_keys.first
   mattr_accessor :ad_username
   @@ad_username = :userPrincipalName
+
+  #Map Devise authentication key accordingly
+  #Does this work when initializers are set too?
+  @@ad_attr_mapping[:AdUser][::Devise.authentication_keys.first] = @@ad_username
 
   #Create the user if they're not found
   mattr_accessor :ad_create_user

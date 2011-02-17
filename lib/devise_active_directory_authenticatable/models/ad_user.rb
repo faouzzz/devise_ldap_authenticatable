@@ -1,49 +1,44 @@
 require 'devise_active_directory_authenticatable/strategy'
 require 'devise_active_directory_authenticatable/exception'
+require 'devise_active_directory_authenticatable/models/ad_object'
+require 'devise_active_directory_authenticatable/models/ad_group'
 
 module Devise
   module Models
     # Active Directory Module, responsible for validating the user credentials via Active Directory
     #
     module AdUser
-
-      #Remove this before production
-      ADConnect = DeviseActiveDirectoryAuthenticatable
-      ADUser = ActiveDirectory::User
-      Logger = DeviseActiveDirectoryAuthenticatable::Logger
-
       extend ActiveSupport::Concern
+      include AdObject
+
+      Logger = DeviseActiveDirectoryAuthenticatable::Logger
 
       ## Devise key
       def login_with
         self[::Devise.authentication_keys.first]
       end
 
-      # Update the attributes of the current object from the AD
-      # Defaults to current user if no parameters given
-      def sync_with_activedirectory(params = {})
-        params[:objectGUID] = self.objectGUID if params.empty?
-        user = params[:user] || User.find_in_activedirectory(params)
-
-        return false if user.nil?
-
-        Logger.send "Updating #{params.inspect}"
-
-        #Grab attributes from Devise mapping
-        ::Devise.ad_user_mapping.each do |user_attr, active_directory_attr|
-          Logger.send "Settings #{user_attr} = #{user.send(active_directory_attr)}"
-          self[user_attr] = user.send(active_directory_attr)
-        end
-      end
-
       # Login event handler.  Triggered after authentication.
       def login
-        sync_with_activedirectory
-        super if defined? super 
+        activedirectory_sync!
+
+        super if defined? super
       end
 
+      def authenticate_with_activedirectory params = {}
+        params[:username] ||= self[login_with]
+        set_activedirectory_credentials params
+        activedirectory_connect
+      end
 
       module ClassMethods
+        def activedirectory_class
+          ActiveDirectory::User
+        end
+
+        def devise_model
+          AdUser
+        end
 
         # Authenticate a user based on configured attribute keys. Returns the
         # authenticated user if it's valid or nil.
@@ -54,61 +49,27 @@ module Devise
           password = attributes[:password]
 
           Logger.send "Attempting to login :#{@login_with} => #{username}"
-          ad_connect(:username => username, :password => password)
-          ad_user = find_in_activedirectory(:username => username)
+          set_activedirectory_credentials :username => username, :password => password
+          activedirectory_connect
           Logger.send "Attempt Result: #{ActiveDirectory::Base.error}"
 
-          raise ADConnect::ActiveDirectoryException, "Could not connect with Active Directory.  Check your username, password, and ensure that your account is not locked." unless ad_user
+
+          # ad_user = find_in_activedirectory(@login_with => username)
+          # return false unless ad_user
 
           # Find them in the local database
-          user = scoped.where(@login_with => attributes[@login_with]).first
-
-          if user.blank? and ::Devise.ad_create_user
-            Logger.send "Creating new user in database"
-            user = new
-            user[@login_with] = attributes[@login_with]
-            user.sync_with_activedirectory(:user => ad_user)
-            Logger.send "Created: #{user.inspect}"
-          end
+          user = find_or_create_from_activedirectory(@login_with => attributes[@login_with]).first
           Logger.send "User: #{user.inspect}"
-          Logger.send "Checking: #{ad_user.objectGUID.inspect} == #{user.objectGUID.inspect}"
+
           # Check to see if we have the same user
-          if ad_user == user
-            user.save if user.new_record?
+          unless user.nil?
+            user.save if user.new_record? and ::Devise.ad_create_user
             user.login if user.respond_to?(:login)
             return user
           else
-            raise ADConnect::ActiveDirectoryException, "Invalid Username or Password.  Possible database inconsistency."
+            raise DeviseActiveDirectoryAuthenticatable::ActiveDirectoryException, "Active Directory user and entry in local database have different GUIDs. Possible database inconsistency."
           end
-
         end
-
-        #Search based on GUID, DN or Username primarily
-        def find_in_activedirectory(params = {})
-          
-          #Reverse mappings
-          params[::Devise.ad_username] ||= params[:username] if params[:username].present?
-          params[::Devise.ad_username] ||= params[@login_with] if params[@login_with].present?
-
-          params.delete(:username)
-          params.delete(@login_with)
-
-          Logger.send "Searching for #{params.inspect}"
-          user = ADUser.find(:first, params)
-          Logger.send "Found: #{user}"
-
-          return user
-        end
-
-        private
-
-        def ad_connect(params = {})
-          #Used for username and password
-          ::Devise.ad_settings[:auth].merge! params
-
-          ActiveDirectory::Base.setup(::Devise.ad_settings)
-          Logger.send "Connection Result: #{ActiveDirectory::Base.error}"
-        end 
       end
     end
   end

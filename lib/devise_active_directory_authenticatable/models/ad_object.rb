@@ -1,71 +1,128 @@
 module Devise
-  module Models
+  #Basic functions and shared methods for AD objects in ActiveRecord
+  module AdObject
+    extend ActiveSupport::Concern
 
-    #Basic functions and shared methods for AD objects in ActiveRecord
-    module AdObject
+    #Constants for easy access
+    ADConnect = DeviseActiveDirectoryAuthenticatable
+    Logger = DeviseActiveDirectoryAuthenticatable::Logger
 
-      ADConnect = DeviseActiveDirectoryAuthenticatable
-      Logger = DeviseActiveDirectoryAuthenticatable::Logger
+    def klass
+      self.class
+    end
 
-      extend ActiveSupport::Concern
+    # Update the attributes of the current object from the AD
+    # Defaults to current user if no parameters given
+    def activedirectory_sync!(params = {})
+      params[:objectguid] = self.objectguid if params.empty?
+      ad_objs = params[:object] || klass.find_in_activedirectory(params)
 
-      included do 
-        #Serialize all binary fields
-        # ::Devise.ad_special_fields[:binary].each do |field|
-        #   serialize field
-        # end
-      end
+      return false if ad_objs.nil?
+      ad_objs = Array(ad_objs) unless ad_objs.is_a? Array
 
-      ## Devise key
-      def login_with
-        self[::Devise.authentication_keys.first]
-      end
-
-      # Update the attributes of the current object from the AD
-      # Defaults to current user if no parameters given
-      def sync_with_activedirectory(params = {})
-        params[:objectGUID] = self.objectGUID if params.empty?
-        user = params[:user] || User.find_in_activedirectory(params)
-
-        return false if user.nil?
-
-        Logger.send "Updating #{params.inspect}"
-
-        #Grab attributes from Devise mapping
-        ::Devise.ad_attr_mapping.each do |user_attr, active_directory_attr|
-          self[user_attr] = user.send(active_directory_attr)
+      #Grab attributes from Devise mapping
+      ad_objs.each do |ad_obj|
+        ::Devise.ad_attr_mapping[klass.devise_model_name.to_sym].each do |local_attr, active_directory_attr|
+          self[local_attr] = ad_obj.send(active_directory_attr)
         end
       end
+    end
 
+    def activedirectory_self
+      find_in_activedirectory :objectGUID => objectGUID
+    end
 
-      module ClassMethods
+    module ClassMethods
 
-        #Search based on GUID, DN or Username primarily
-        def find_in_activedirectory(params = {})
-          
-          #Reverse mappings
-          params[::Devise.ad_username] ||= params[:username] if params[:username].present?
-          params[::Devise.ad_username] ||= params[@login_with] if params[@login_with].present?
+      # def devise_model
+      #   self.ancestors.each do |mod|
+      #     return mod if mod.include? self.class
+      #   end
+      # end
 
-          params.delete(:username)
-          params.delete(@login_with)
+      def devise_model_name
+        devise_model.name[/.*::(.*)/, 1]
+      end
 
-          Logger.send "Searching for #{params.inspect}"
-          user = ADUser.find(:first, params)
-          Logger.send "Found: #{user}"
+      def activedirectory_class_name
+        activedirectory_class.name[/.*::(.*)/, 1]
+      end
 
-          return user
+      #TODO switch from reverse to rassoc to allow for multiple mappings
+      def ad_field_to_local field_name
+        @ad_to_local_map ||= ::Devise.ad_attr_mapping[devise_model_name.to_sym].invert
+        return (@ad_to_local_map.has_key? field_name) ? @ad_to_local_map[field_name] : field_name
+      end
+
+      #TODO switch from reverse to rassoc to allow for multiple mappings
+      def local_field_to_ad field_name
+        @local_to_ad_map ||= ::Devise.ad_attr_mapping[devise_model_name.to_sym]
+        return (@local_to_ad_map.has_key? field_name) ? @local_to_ad_map[field_name] : field_name
+      end
+
+      def ad_attrs_to_local ad_attrs
+        local_attrs = {}
+        ad_attrs.each do |ad_key, value|
+          local_key = ad_field_to_local(ad_key)
+          local_attrs[local_key] = value
+        end
+        local_attrs
+      end
+
+      def local_attrs_to_ad local_attrs
+        ad_attrs = {}
+        local_attrs.each do |local_key, value|
+          ad_key = local_field_to_ad(local_key)
+          ad_attrs[ad_key] = value
+        end
+        ad_attrs
+      end
+
+      #Search based on GUID, DN or Username primarily
+      def find_in_activedirectory(local_params = {})
+        #Reverse mappings for user
+        ad_params = local_attrs_to_ad local_params
+
+        return find_all_in_activedirectory if ad_params.empty?
+
+        ad_objs = activedirectory_class.find(:all, ad_params)
+
+        return ad_objs
+      end
+
+      def find_or_create_from_activedirectory params = {}
+        ad_objs = find_in_activedirectory params
+        local_objs = []
+
+        ad_objs.each do |ad_obj|
+          obj = scoped.where(:objectguid => ad_obj.objectguid).first
+          obj = new if obj.blank?
+
+          obj.activedirectory_sync! :object => ad_obj
+
+          local_objs << obj
         end
 
-        private
+        local_objs
+      end
 
-        def ad_connect(params = {})
-          #Used for username and password
-          ::Devise.ad_settings[:auth].merge! params
+      def find_all_in_activedirectory
+        activedirectory_class.find(:all)
+      end
 
-          ActiveDirectory::Base.setup(::Devise.ad_settings)
-          Logger.send "Connection Result: #{ActiveDirectory::Base.error}"
-        end 
+      def connected_to_activedirectory?
+        ActiveDirectory::Base.connected?
+      end
+
+      # Initializes connection with active directory
+      def set_activedirectory_credentials(params = {})
+        #Used for username and password
+        ::Devise.ad_settings[:auth].merge! params
+      end
+
+      def activedirectory_connect
+        ActiveDirectory::Base.setup(::Devise.ad_settings)
+        raise DeviseActiveDirectoryAuthenticatable::ActiveDirectoryException, "Invliad Username or Password" unless ActiveDirectory::Base.connected?
       end
     end
   end

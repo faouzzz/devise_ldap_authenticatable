@@ -5,7 +5,7 @@
 			"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
 			"settings":
 			{
-				"buffer_size": 3917,
+				"buffer_size": 0,
 				"line_ending": "Unix"
 			}
 		},
@@ -13,7 +13,7 @@
 			"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/Rakefile",
 			"settings":
 			{
-				"buffer_size": 1525,
+				"buffer_size": 1130,
 				"line_ending": "Unix"
 			}
 		},
@@ -21,7 +21,7 @@
 			"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable.rb",
 			"settings":
 			{
-				"buffer_size": 2719,
+				"buffer_size": 1786,
 				"line_ending": "Unix"
 			}
 		},
@@ -29,7 +29,7 @@
 			"file": "/Users/ajrkerr/test3.rb",
 			"settings":
 			{
-				"buffer_size": 1404,
+				"buffer_size": 896,
 				"line_ending": "Unix"
 			}
 		},
@@ -37,7 +37,7 @@
 			"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable/strategy.rb",
 			"settings":
 			{
-				"buffer_size": 1196,
+				"buffer_size": 1211,
 				"line_ending": "Unix"
 			}
 		}
@@ -125,15 +125,15 @@
 					"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable/model.rb",
 					"settings":
 					{
-						"buffer_size": 3917,
+						"buffer_size": 0,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								883,
-								883
+								0,
+								0
 							]
 						],
 						"settings":
@@ -153,15 +153,15 @@
 					"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/Rakefile",
 					"settings":
 					{
-						"buffer_size": 1525,
+						"buffer_size": 1130,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								366,
-								366
+								0,
+								0
 							]
 						],
 						"settings":
@@ -187,15 +187,15 @@
 					"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable.rb",
 					"settings":
 					{
-						"buffer_size": 2719,
+						"buffer_size": 1786,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								705,
-								705
+								0,
+								0
 							]
 						],
 						"settings":
@@ -215,15 +215,15 @@
 					"file": "/Users/ajrkerr/test3.rb",
 					"settings":
 					{
-						"buffer_size": 1404,
+						"buffer_size": 896,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								754,
-								754
+								0,
+								0
 							]
 						],
 						"settings":
@@ -243,15 +243,15 @@
 					"file": "/Users/ajrkerr/github/devise_active_directory_authenticatable/lib/devise_active_directory_authenticatable/strategy.rb",
 					"settings":
 					{
-						"buffer_size": 1196,
+						"buffer_size": 1211,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								738,
-								738
+								0,
+								0
 							]
 						],
 						"settings":
@@ -298,6 +298,7 @@
 			1
 		]
 	},
+	"menu_visible": true,
 	"save_all_on_build": true,
 	"select_file":
 	{
