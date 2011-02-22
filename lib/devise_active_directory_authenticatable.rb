@@ -51,7 +51,7 @@ module Devise
   #Username attribute used for logging in
   #Will be automagicaly mapped to authentication_keys.first
   mattr_accessor :ad_username
-  @@ad_username = :userPrincipalName
+  @@ad_username = :userprincipalname
 
   #Map Devise authentication key accordingly
   #Does this work when initializers are set too?

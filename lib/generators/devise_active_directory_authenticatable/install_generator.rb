@@ -37,23 +37,31 @@ module DeviseActiveDirectoryAuthenticatable
   # }
 
 
+  # config.ad_attr_mapping = {
   ##Attribute mapping for user object
-  # config.ad_user_mapping = {
-  #   :objectguid => :objectguid, #Required
-  #   :username => :userprincipalname,
-  #   :dn => :dn,
-  #   :firstname => :givenname,
-  #   :lastname => :sn
+  #   :AdUser => {
+  #     #Attributes are lowercase
+  #     :objectguid => :objectguid, #Required
+  #     :username => :userprincipalname,
+  #     :dn => :dn,
+  #     :firstname => :givenName,
+  #     :lastname => :sn,
+  #     :whenchanged => :whenchanged,
+  #     :whencreated => :whencreated,
+  #   },
+
+  ##Attribute mapping for group objects
+  #   :AdGroup => {
+  #     #Attributes are lowercase
+  #     :objectguid => :objectguid, #Required
+  #     :dn => :dn,
+  #     :name => :name,
+  #     :description => :description,
+  #     :whencreated => :whencreated,
+  #     :whenchanged => :whenchanged,
+  #   }
   # }
 
-  # config.ad_group_mapping = {
-  #   :objectguid => :objectguid, #Required
-  #   :dn => :dn,
-  #   :name => :name,
-  #   :description => :description,
-  #   :whencreated => :whencreated,
-  #   :whenchanged => :whenchanged,
-  # }
 
   ##Username attribute
   ##Maps to :login_with in the devise configuration

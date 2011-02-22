@@ -1,7 +1,6 @@
 require 'devise_active_directory_authenticatable/strategy'
 require 'devise_active_directory_authenticatable/exception'
 require 'devise_active_directory_authenticatable/models/ad_object'
-require 'devise_active_directory_authenticatable/models/ad_group'
 
 module Devise
   module Models
@@ -12,6 +11,10 @@ module Devise
       include AdObject
 
       Logger = DeviseActiveDirectoryAuthenticatable::Logger
+
+      included do
+
+      end
 
       ## Devise key
       def login_with
@@ -26,12 +29,17 @@ module Devise
       end
 
       def authenticate_with_activedirectory params = {}
-        params[:username] ||= self[login_with]
-        set_activedirectory_credentials params
-        activedirectory_connect
+        params[:username] ||= login_with
+        self.class.set_activedirectory_credentials params
+        self.class.activedirectory_connect
       end
 
       module ClassMethods
+        # TODO find a way to get rid of this with metaprogramming
+        def devise_model
+          AdUser
+        end
+
         def activedirectory_class
           ActiveDirectory::User
         end
@@ -39,9 +47,7 @@ module Devise
         # Authenticate a user based on configured attribute keys. Returns the
         # authenticated user if it's valid or nil.
         def authenticate_with_activedirectory(attributes={}) 
-          @login_with = ::Devise.authentication_keys.first
-
-          username = attributes[@login_with]
+          username = attributes[login_with]
           password = attributes[:password]
 
           Logger.send "Attempting to login :#{@login_with} => #{username}"
@@ -55,7 +61,6 @@ module Devise
 
           # Find them in the local database
           user = find_or_create_from_activedirectory(@login_with => attributes[@login_with]).first
-          Logger.send "User: #{user.inspect}"
 
           # Check to see if we have the same user
           unless user.nil?

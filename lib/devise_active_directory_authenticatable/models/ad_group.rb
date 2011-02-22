@@ -10,12 +10,17 @@ module Devise
       include AdObject
 
       module ClassMethods
+        # TODO find a way to get rid of this with metaprogramming
+        def devise_model
+          AdGroup
+        end
+
         def activedirectory_class
           ActiveDirectory::Group
         end
 
         def sync_all
-          #return false unless connected_to_activedirectory?
+          return false unless connected_to_activedirectory?
           find_or_create_from_activedirectory.each do |gp|
             gp.save
           end
