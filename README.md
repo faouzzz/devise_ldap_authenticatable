@@ -58,9 +58,11 @@ Options:
 The rest of this documentation needs to be revised.  To get going on this, run the installer which will add some configuration options to config/intializers/devise.rb
 
 In your user model add:
+
     devise :ad_user
 
 In your group model add:
+
     devise :ad_group
 
 
