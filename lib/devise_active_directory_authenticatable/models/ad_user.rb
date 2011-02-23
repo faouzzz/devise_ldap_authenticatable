@@ -13,7 +13,7 @@ module Devise
       Logger = DeviseActiveDirectoryAuthenticatable::Logger
 
       included do
-
+        #has_and_belongs_to_many :member, :class_name, :join_table
       end
 
       ## Devise key
@@ -60,7 +60,7 @@ module Devise
           # return false unless ad_user
 
           # Find them in the local database
-          user = find_or_create_from_activedirectory(@login_with => attributes[@login_with]).first
+          user = find_or_create_from_activedirectory(login_with => attributes[login_with]).first
 
           # Check to see if we have the same user
           unless user.nil?

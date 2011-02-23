@@ -54,7 +54,7 @@ module Devise
       def find_in_activedirectory(local_params = {})
         #Reverse mappings for user
         ad_params = local_attrs_to_ad local_params
-
+        Logger.send "Translated #{local_params.inspect} to #{ad_params.inspect}"
         return find_all_in_activedirectory if ad_params.empty?
 
         activedirectory_class.find(:all, ad_params)
