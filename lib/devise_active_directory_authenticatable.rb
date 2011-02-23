@@ -64,6 +64,22 @@ module Devise
   # Log LDAP queries to the Rails logger
   mattr_accessor :ad_logger
   @@ad_logger = true
+
+  ##Update the user object from the AD
+  mattr_accessor :ad_update_users
+  @@ad_update_users = true
+
+  ##Update the group object from the AD
+  mattr_accessor :ad_update_groups
+  @@ad_update_groups = true
+
+  ##Update the group memberships from the AD, this uses the ancestory gem
+  mattr_accessor :ad_update_group_memberships
+  @@ad_update_group_memberships = true
+
+  ##Update the user memberships from the AD
+  mattr_accessor :ad_update_user_memberships
+  @@ad_update_user_memberships = true
 end
 
 # Add ldap_authenticatable strategy to defaults.

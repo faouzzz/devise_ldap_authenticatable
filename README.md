@@ -5,6 +5,8 @@ Devise ActiveDirectory Authenticatable is a AD based authentication strategy for
 
 If you are building applications for use within your organization which require authentication and you want to use AD, this plugin is for you.
 
+Please note, this plugin is currently under heavy development.
+
 Requirements
 ------------
 
@@ -13,8 +15,9 @@ Requirements
 
 These gems are dependencies of the gem:
 
-- Devise 1.1.2
-- active_directory 1.0.4 from http://github.com/ajrkerr/activedirectory
+- Devise 1.1.5
+- active_directory 1.2.4
+- ancestry 1.2.3 _(For storing the group heirarchy)_
 
 Installation
 ------------
@@ -25,12 +28,8 @@ This will *only* work for Rails 3 applications.
 
 In the Gemfile for your application:
 
-    gem "devise", ">=1.1.2"
+    gem "devise"
     gem "devise_active_directory_authenticatable"
-    
-To get the latest version, pull directly from github instead of the gem:
-
-    gem "devise_active_directory_authenticatable", :git => "git://github.com/ajrkerr/devise_active_directory_authenticatable.git"
 
 
 Setup
@@ -49,10 +48,20 @@ This will update the devise.rb initializer, and update your user model. There ar
 
 Options:
 
-    [--user-model=USER_MODEL]  # Model to update
+    [--user-model=USER_MODEL]  # User Model to update
                                # Default: user
+    [--group-model=USER_MODEL] # Group Model to update
+                               # Default: group
     [--add-rescue]             # Update Application Controller with resuce_from for DeviseActiveDirectoryAuthenticatable::ActiveDirectoryException
                                # Default: true
+
+The rest of this documentation needs to be revised.  To get going on this, run the installer which will add some configuration options to config/intializers/devise.rb
+
+In your user model add:
+  devise :ad_user
+
+In your group model add:
+  devise :ad_group
 
 
 Usage
@@ -73,7 +82,7 @@ In initializer  `config/initializers/devise.rb` :
   * Active Directory server configuration settings
 
 * ad\_attr\_mapping 
-  * Attribute mapping between active directory and the user model
+  * Attribute mapping between active directory and the user model.  These attributes will be pulled from the AD
 
 * ad\_username _(default: :userPrincipalName)_
   * Username attribute on the AD to login with.  Maps with the login_with attribute from devise.
@@ -84,6 +93,19 @@ In initializer  `config/initializers/devise.rb` :
 
 * ad\_logger _(default: true)_
   * If set to true, will log Active Directory queries to the Rails logger.
+
+* ad\_update\_users _(default: true)_
+  * If true, devise will update the user attributes from the Active Directory when the user logs in
+
+* ad\_update\_groups _(default: true)_
+  * If true, devise will allow the group models to be update from the Active Directory
+
+* ad\_update\_group\_memberships _(default: true)_ _[unimplemented]_
+  * If true, devise will allow the memberships for groups and users to be updated.  It will also update the memberships when a user logs in.
+
+* ad\_update\_user\_memberships _(default: true)_ _[unimplemented]_
+  * If true, devise will allow the memberships for groups and users to be updated.  It will also update the memberships when a user logs in.
+
 
 
 References
