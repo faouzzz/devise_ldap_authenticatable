@@ -20,6 +20,7 @@ module Devise
       # Login event handler.  Triggered after authentication.
       # Maybe
       def login
+        update_parents
         super if defined? super
       end
 

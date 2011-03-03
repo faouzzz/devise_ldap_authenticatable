@@ -19,29 +19,29 @@ module Devise
 
     # Update the attributes of the current object from the AD
     # Defaults to current user if no parameters given
-    def activedirectory_sync! params = {}
-      params[:objectguid] = self.objectguid if params.empty?
-      @ad_obj ||= params[:object] || klass.find_activedirectory_objs(params).first
-      copy_from_activedirectory @ad_obj unless @ad_obj.nil?
-      update_memberships
-    end
+    # def activedirectory_sync! params = {}
+    #   params[:objectguid] = self.objectguid if params.empty?
+    #   @ad_obj ||= params[:object] || klass.find_activedirectory_objs(params).first
+      
+    #   attr_map.each do |local_attr, active_directory_attr|
+    #     self[local_attr] = @ad_obj[active_directory_attr]
+    #   end
+
+    #   update_memberships
+    # end
 
     # Update the attributes of the current object from the AD
     # Defaults to current user if no parameters given
     def copy_from_activedirectory! params = {}
-      #Allows for caching, object, or AD search
-      params[:objectguid] = self[:objectguid] if params.empty?
-      @ad_obj ||= params[:object] || klass.find_activedirectory_objs(params).first
-      copy_from_activedirectory @ad_obj unless @ad_obj.nil?
-      # update_memberships
-    end
+      #Allows us to change what ad object is bound to this user
+      @ad_obj = klass.find_activedirectory_objs(params).first unless params.empty?
 
+      unless @ad_obj.nil?
+        attr_map.each do |local_attr, active_directory_attr|
+          self[local_attr] = @ad_obj[active_directory_attr]
+        end
 
-
-    # Update the local object using an Active Directory entry
-    def copy_from_activedirectory ad_obj
-      attr_map.each do |local_attr, active_directory_attr|
-        self[local_attr] = ad_obj[active_directory_attr]
+        update_memberships
       end
     end
 
