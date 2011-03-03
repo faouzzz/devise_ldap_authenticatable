@@ -17,7 +17,7 @@ These gems are dependencies of the gem:
 
 - Devise 1.1.5
 - active_directory 1.2.4
-- ancestry 1.2.3 _(For storing the group heirarchy)_
+- activerecord-import 0.2.0
 
 Installation
 ------------
@@ -57,6 +57,8 @@ Options:
 
 The rest of this documentation needs to be revised.  To get going on this, run the installer which will add some configuration options to config/intializers/devise.rb
 
+Update your user and group tables in the database with migrations.  Check attributes that are set in config/initializers/devise.rb to see which ones you will have to add.
+
 In your user model add:
 
     devise :ad_user
@@ -64,7 +66,7 @@ In your user model add:
 In your group model add:
 
     devise :ad_group
-
+    
 
 Usage
 -----
@@ -108,6 +110,8 @@ In initializer  `config/initializers/devise.rb` :
 * ad\_update\_user\_memberships _(default: true)_ _[unimplemented]_
   * If true, devise will allow the memberships for groups and users to be updated.  It will also update the memberships when a user logs in.
 
+* ad\_caching _(default: true)_
+  * If true, this will instruct the plugin to use the active_directory caching feature.  This greatly speeds up queries that are using the distinguishedname such as querying for group and user memberships.
 
 
 References

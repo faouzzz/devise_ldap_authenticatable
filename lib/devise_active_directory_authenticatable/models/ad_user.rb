@@ -12,10 +12,6 @@ module Devise
 
       Logger = DeviseActiveDirectoryAuthenticatable::Logger
 
-      included do
-        #has_and_belongs_to_many :member, :class_name, :join_table
-      end
-
       ## Devise key
       def login_with
         self[::Devise.authentication_keys.first]

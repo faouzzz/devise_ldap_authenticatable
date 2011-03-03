@@ -1,3 +1,4 @@
+require 'psych' #fix a bug with hoe
 require 'rake'
 require 'rake/testtask'
 require 'rake/rdoctask'

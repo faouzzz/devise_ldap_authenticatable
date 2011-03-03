@@ -91,6 +91,8 @@ module DeviseActiveDirectoryAuthenticatable
   ##Update the user memberships from the AD
   # config.ad_update_user_memberships = true
 
+  ##Uses caching when doing AD queries for DNs.  This speeds things up significantly.
+  # config.ad_caching = true
         eof
       
       settings

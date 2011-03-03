@@ -1,6 +1,7 @@
 # encoding: utf-8
 require 'devise'
 require 'active_directory'
+require 'active_record'
 
 require 'devise_active_directory_authenticatable/exception'
 require 'devise_active_directory_authenticatable/logger'
@@ -80,9 +81,13 @@ module Devise
   ##Update the user memberships from the AD
   mattr_accessor :ad_update_user_memberships
   @@ad_update_user_memberships = true
+
+  ##Enable Active Directory caching.  This speeds up group/membership queries significantly.
+  mattr_accessor :ad_caching
+  @@ad_caching = true
 end
 
-# Add ldap_authenticatable strategy to defaults.
+# Add active_directory_authenticatable strategy to defaults.
 #
 Devise.add_module(:ad_user,
                   :route => :session, ## This will add the routes, rather than in the routes.rb
