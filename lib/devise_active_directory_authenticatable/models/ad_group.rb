@@ -9,21 +9,12 @@ module Devise
       extend ActiveSupport::Concern
       include AdObject
 
-      def validate_memberships repair=true
-      end
-
-      def sync_group_memberships
-        return falses unless ::Devise.ad_update_group_memberships
-
-        #Grab AD Memberships for the current object
-
-        #Sync them
-
-      end
-
       #Remember to check for cycles in the graph
       #BFS or DFS?
       def find_all_parents
+      end
+
+      def find_all_children
       end
 
       #Remember to check for cycles in the graph
@@ -54,33 +45,6 @@ module Devise
 
         def activedirectory_class
           ActiveDirectory::Group
-        end
-
-        def sync_all
-          return false unless connected_to_activedirectory?
-
-          groups = find_or_create_from_activedirectory
-          # self.class.import groups
-          ActiveRecord::Base.transaction do
-            groups.each { |gp| gp.save if gp.new_record? }
-            groups.each do |gp| 
-              gp.update_memberships
-              gp.save
-            end
-          end
-        end
-
-        def sync_group_memberships
-          return false unless ::Devise.ad_update_group_memberships
-
-          #Grab all groups and their corresponding AD objects
-
-          #Iterate through each one and upate the memberships
-
-        end
-
-        #Validate the group memberships graph
-        def validate_memberships repair=true
         end
       end
 

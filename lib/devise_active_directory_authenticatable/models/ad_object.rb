@@ -14,26 +14,29 @@ module Devise
     end
 
     def ad_obj
-      @ad_obj ||= klass.find_in_activedirectory(:objectguid => self.objectguid).first
+      @ad_obj ||= klass.find_activedirectory_objs(:objectguid => self.objectguid).first
     end
 
     # Update the attributes of the current object from the AD
     # Defaults to current user if no parameters given
     def activedirectory_sync! params = {}
       params[:objectguid] = self.objectguid if params.empty?
-      @ad_obj ||= params[:object] || klass.find_in_activedirectory(params).first
+      @ad_obj ||= params[:object] || klass.find_activedirectory_objs(params).first
       copy_from_activedirectory @ad_obj unless @ad_obj.nil?
       update_memberships
     end
 
     # Update the attributes of the current object from the AD
     # Defaults to current user if no parameters given
-    def update_from_activedirectory! params = {}
-      params[:objectguid] = self.objectguid if params.empty?
-      @ad_obj ||= params[:object] || klass.find_in_activedirectory(params).first
+    def copy_from_activedirectory! params = {}
+      #Allows for caching, object, or AD search
+      params[:objectguid] = self[:objectguid] if params.empty?
+      @ad_obj ||= params[:object] || klass.find_activedirectory_objs(params).first
       copy_from_activedirectory @ad_obj unless @ad_obj.nil?
       # update_memberships
     end
+
+
 
     # Update the local object using an Active Directory entry
     def copy_from_activedirectory ad_obj
@@ -71,7 +74,7 @@ module Devise
       klass = params[:class]
       field = params[:field]
 
-      ad_objs = klass.find_by_activedirectory(ad_objs) unless ad_objs.empty?
+      ad_objs = klass.find_from_activedirectory(:object => ad_objs)
       self.send "#{field}=", ad_objs
     end
 
@@ -116,19 +119,23 @@ module Devise
         @ad_class ||= activedirectory_class.name[/.*::(.*)/, 1]
       end
 
-      #Search based on GUID, DN or Username primarily
-      def find_in_activedirectory(local_params = {})
-        #Reverse mappings for user
-        ad_params = local_attrs_to_ad local_params
 
-        return find_all_in_activedirectory if ad_params.empty?
+      #Search based on GUID, DN or Username primarily
+      def find_activedirectory_objs local_params = {}
+        #Sometimes we're provide the objects
+        if local_params.key? :object
+          return [local_params[:object]] unless local_params[:object].kind_of? Array
+          return local_params[:object]
+        end
+
+        #Reverse mappings for user
+        ad_params = local_attrs_to_ad(local_params)
 
         activedirectory_class.find(:all, ad_params)
       end
 
-      def find_by_activedirectory ad_objs
-        ad_objs = [ad_objs] unless ad_objs.kind_of? Array
-
+      def find_from_activedirectory local_params = {}
+        ad_objs = find_activedirectory_objs local_params
         guids = ad_objs.collect { |obj| obj[:objectguid] }
         scoped.where(:objectguid => guids)
       end
@@ -136,13 +143,13 @@ module Devise
       ##
       # Does a search using AD terms and either finds the corresponding
       # object in the database, or creates it
-      # 
-      def find_or_create_from_activedirectory params = {}
-        ad_objs = find_in_activedirectory params
+      # TODO change attributes to not be statically mapped to objectguid
+      def find_or_create_from_activedirectory local_params = {}
+        ad_objs = find_activedirectory_objs local_params
         local_objs = []
 
         #Grab all of the objects in one query by GUID for efficiency
-        guids = ad_objs.collect(&:objectguid)
+        guids = ad_objs.collect { |obj| obj[:objectguid] }
         db_objs_by_guid = {}
 
         #Make a hash map to do quick lookups
@@ -151,34 +158,49 @@ module Devise
         end
 
         ad_objs.each do |ad_obj|
-          obj = db_objs_by_guid[ad_obj[:objectguid]] || new
-
-          obj.update_from_activedirectory!(:object => ad_obj)
+          guid = ad_obj[:objectguid]
+          obj = db_objs_by_guid[guid] || new
+          obj.copy_from_activedirectory!(:object => ad_obj) if obj.new_record?
 
           local_objs << obj
         end
 
-        # ActiveRecord::Base.transaction do 
-        #   local_objs.each { |obj| obj.update_from  }
-        # end
-
         local_objs
       end
 
-      def find_all_in_activedirectory
-        activedirectory_class.find :all
+      def sync_all
+        return false unless connected_to_activedirectory?
+
+        db_objs = find_or_create_from_activedirectory
+
+        ActiveRecord::Base.transaction do
+          #Save the new ones
+          db_objs.each { |obj| obj.save if obj.new_record? }
+
+          #Then update the memberships
+          #If we're updating all of them, then updating just the parents will do
+          db_objs.each do |obj| 
+            obj.update_parents
+          end
+        end
       end
 
+      ##
+      # Checks to see if a conection with AD has been established
       def connected_to_activedirectory?
         ActiveDirectory::Base.connected?
       end
 
-      # Initializes connection with active directory
+      ##
+      # Sets the username and password for the connection
+      # params {:username => 'joe.user', :password => 'top_secret' }
       def set_activedirectory_credentials(params = {})
-        #Used for username and password
+        #Used for username and password only
         ::Devise.ad_settings[:auth].merge! params
       end
 
+      ##
+      # Attempts to connect with the activedirectory based on the configuration options
       def activedirectory_connect
         ActiveDirectory::Base.enable_cache if ::Devise.ad_caching
         ActiveDirectory::Base.setup(::Devise.ad_settings)

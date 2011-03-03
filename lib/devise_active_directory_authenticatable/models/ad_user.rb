@@ -18,9 +18,8 @@ module Devise
       end
 
       # Login event handler.  Triggered after authentication.
+      # Maybe
       def login
-        activedirectory_sync!
-
         super if defined? super
       end
 
@@ -50,10 +49,6 @@ module Devise
           set_activedirectory_credentials :username => username, :password => password
           activedirectory_connect
           Logger.send "Attempt Result: #{ActiveDirectory::Base.error}"
-
-
-          # ad_user = find_in_activedirectory(@login_with => username)
-          # return false unless ad_user
 
           # Find them in the local database
           user = find_or_create_from_activedirectory(login_with => attributes[login_with]).first
