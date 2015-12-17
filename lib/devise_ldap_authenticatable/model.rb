@@ -13,7 +13,7 @@ module Devise
       extend ActiveSupport::Concern
 
       included do
-        attr_reader :current_password, :password
+        attr_reader :current_password, :password, :domain
         attr_accessor :password_confirmation
       end
 
@@ -25,12 +25,12 @@ module Devise
       def change_password!(current_password)
         raise "Need to set new password first" if @password.blank?
 
-        Devise::LDAP::Adapter.update_own_password(login_with, @password, current_password)
+        Devise::LDAP::Adapter.update_own_password(@domain, login_with, @password, current_password)
       end
-      
+
       def reset_password!(new_password, new_password_confirmation)
         if new_password == new_password_confirmation && ::Devise.ldap_update_password
-          Devise::LDAP::Adapter.update_password(login_with, new_password)
+          Devise::LDAP::Adapter.update_password(@domain, login_with, new_password)
         end
         clear_reset_password_token if valid?
         save
@@ -39,25 +39,25 @@ module Devise
       def password=(new_password)
         @password = new_password
         if defined?(password_digest) && @password.present? && respond_to?(:encrypted_password=)
-          self.encrypted_password = password_digest(@password) 
+          self.encrypted_password = password_digest(@password)
         end
       end
 
       # Checks if a resource is valid upon authentication.
-      def valid_ldap_authentication?(password)
-        Devise::LDAP::Adapter.valid_credentials?(login_with, password)
+      def valid_ldap_authentication?(attributes)
+        Devise::LDAP::Adapter.valid_credentials?(attributes[:domain], login_with, attributes[:password])
       end
 
       def ldap_entry
-        @ldap_entry ||= Devise::LDAP::Adapter.get_ldap_entry(login_with)
+        @ldap_entry ||= Devise::LDAP::Adapter.get_ldap_entry(@domain, login_with)
       end
 
       def ldap_groups
-        Devise::LDAP::Adapter.get_groups(login_with)
+        Devise::LDAP::Adapter.get_groups(@domain, login_with)
       end
 
       def in_ldap_group?(group_name, group_attribute = LDAP::DEFAULT_GROUP_UNIQUE_MEMBER_LIST_KEY)
-        Devise::LDAP::Adapter.in_ldap_group?(login_with, group_name, group_attribute)
+        Devise::LDAP::Adapter.in_ldap_group?(@domain, login_with, group_name, group_attribute)
       end
 
       def ldap_dn
@@ -102,7 +102,7 @@ module Devise
             resource.password = attributes[:password]
           end
 
-          if ::Devise.ldap_create_user && resource.new_record? && resource.valid_ldap_authentication?(attributes[:password])
+          if ::Devise.ldap_create_user && resource.new_record? && resource.valid_ldap_authentication?(attributes)
             resource.ldap_before_save if resource.respond_to?(:ldap_before_save)
             resource.save!
           end
