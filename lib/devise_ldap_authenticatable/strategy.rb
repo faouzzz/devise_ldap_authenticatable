@@ -15,7 +15,7 @@ module Devise
         return fail(:invalid) unless resource
 
         if resource.persisted?
-          if validate(resource) { resource.valid_ldap_authentication?(password) }
+          if validate(resource) { resource.valid_ldap_authentication?(authentication_hash.merge(password: password)) }
             remember_me(resource)
             resource.after_ldap_authentication
             success!(resource)
@@ -25,7 +25,7 @@ module Devise
         end
 
         if resource.new_record?
-          if validate(resource) { resource.valid_ldap_authentication?(password) }
+          if validate(resource) { resource.valid_ldap_authentication?(authentication_hash.merge(password: password)) }
             return fail(:not_found_in_database) # Valid credentials
           else
             return fail(:invalid) # Invalid credentials

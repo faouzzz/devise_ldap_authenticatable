@@ -7,8 +7,14 @@ module Devise
         if ::Devise.ldap_config.is_a?(Proc)
           ldap_config = ::Devise.ldap_config.call
         else
-          ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)[Rails.env]
+          ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)[Rails.env][params[:domain].downcase]
         end
+
+        unless ldap_config
+          DeviseLdapAuthenticatable::Logger.send("Unable to load LDAP config for #{params[:domain].downcase}")
+          raise "Unable to load LDAP config for #{params[:domain].downcase}"
+        end
+
         ldap_options = params
         ldap_config["ssl"] = :simple_tls if ldap_config["ssl"] === true
         ldap_options[:encryption] = ldap_config["ssl"].to_sym if ldap_config["ssl"]
@@ -28,7 +34,7 @@ module Devise
         @required_attributes = ldap_config["require_attribute"]
 
         @ldap.auth ldap_config["admin_user"], ldap_config["admin_password"] if params[:admin]
-        @ldap.auth params[:login], params[:password] if ldap_config["admin_as_user"]
+        @ldap.auth "#{params[:domain]}\\#{params[:login]}", params[:password] if ldap_config["admin_as_user"]
 
         @login = params[:login]
         @password = params[:password]
@@ -188,6 +194,10 @@ module Devise
           ldap_entry = nil
           match_count = 0
           @ldap.search(:filter => filter) {|entry| ldap_entry = entry; match_count+=1}
+          op_result= @ldap.get_operation_result
+          if op_result.code!=0 then
+          	DeviseLdapAuthenticatable::Logger.send("LDAP Error #{op_result.code}: #{op_result.message}")
+          end
           DeviseLdapAuthenticatable::Logger.send("LDAP search yielded #{match_count} matches")
           ldap_entry
         end
