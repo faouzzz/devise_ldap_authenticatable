@@ -1,7 +1,7 @@
 module Devise
   module LDAP
     class Connection
-      attr_reader :ldap, :login
+      attr_reader :ldap, :login, :domain
 
       def initialize(params = {})
         if ::Devise.ldap_config.is_a?(Proc)
@@ -36,9 +36,11 @@ module Devise
         @ldap.auth ldap_config["admin_user"], ldap_config["admin_password"] if params[:admin]
         @ldap.auth "#{params[:domain]}\\#{params[:login]}", params[:password] if ldap_config["admin_as_user"]
 
+        @domain = params[:domain]
         @login = params[:login]
         @password = params[:password]
         @new_password = params[:new_password]
+        # raise
       end
 
       def delete_param(param)

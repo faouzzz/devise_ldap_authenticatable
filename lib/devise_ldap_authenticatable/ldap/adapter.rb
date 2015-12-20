@@ -14,8 +14,7 @@ module Devise
           admin: ::Devise.ldap_use_admin_to_bind
         }
 
-        resource = Devise::LDAP::Connection.new(options)
-        resource.authorized?
+        Devise::LDAP::Connection.new(options).authorized?
       end
 
       def self.update_password(domain, login, new_password)
@@ -35,10 +34,11 @@ module Devise
         set_ldap_param(login, :userPassword, ::Devise.ldap_auth_password_builder.call(new_password), current_password)
       end
 
-      def self.ldap_connect(domain, login)
+      def self.ldap_connect(domain, login, password)
         options = {
           domain: domain,
           login: login,
+          password: password,
           ldap_auth_username_builder: ::Devise.ldap_auth_username_builder,
           admin: ::Devise.ldap_use_admin_to_bind
         }
@@ -46,20 +46,20 @@ module Devise
         Devise::LDAP::Connection.new(options)
       end
 
-      def self.valid_login?(domain, login)
-        ldap_connect(domain, login).valid_login?
+      def self.valid_login?(domain, login, password)
+        ldap_connect(domain, login, password).valid_login?
       end
 
-      def self.get_groups(domain, login)
-        ldap_connect(domain, login).user_groups
+      def self.get_groups(domain, login, password)
+        ldap_connect(domain, login, password).user_groups
       end
 
-      def self.in_ldap_group?(domain, login, group_name, group_attribute = nil)
-        ldap_connect(domain, login).in_group?(group_name, group_attribute)
+      def self.in_ldap_group?(domain, login, password, group_name, group_attribute = nil)
+        ldap_connect(domain, login, password).in_group?(group_name, group_attribute)
       end
 
-      def self.get_dn(domain, login)
-        ldap_connect(domain, login).dn
+      def self.get_dn(domain, login, password)
+        ldap_connect(domain, login, password).dn
       end
 
       def self.set_ldap_param(domain, login, param, new_value, password = nil)
@@ -86,13 +86,13 @@ module Devise
         resource.delete_param(param)
       end
 
-      def self.get_ldap_param(domain, login, param)
-        resource = ldap_connect(domain, login)
+      def self.get_ldap_param(domain, login, password, param)
+        resource = ldap_connect(domain, login, password)
         resource.ldap_param_value(param)
       end
 
-      def self.get_ldap_entry(domain, login)
-        ldap_connect(domain, login).search_for_login
+      def self.get_ldap_entry(domain, login, password)
+        ldap_connect(domain, login, password).search_for_login
       end
     end
   end
