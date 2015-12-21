@@ -13,6 +13,7 @@ module Devise
         resource = mapping.to.find_for_ldap_authentication(authentication_hash.merge(password: password))
 
         return fail(:invalid) unless resource
+        return fail(resource) if resource.class == Symbol
 
         if resource.persisted?
           if validate(resource) { resource.valid_ldap_authentication?(authentication_hash.merge(password: password)) }

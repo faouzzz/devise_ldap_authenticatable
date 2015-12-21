@@ -23,7 +23,7 @@ module Devise
         @ldap.host = ldap_config["host"]
         @ldap.port = ldap_config["port"]
         @ldap.base = ldap_config["base"]
-        @attribute = ldap_config["attribute"]
+        @attribute = ldap_config["login_attribute"]
         @allow_unauthenticated_bind = ldap_config["allow_unauthenticated_bind"]
 
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]

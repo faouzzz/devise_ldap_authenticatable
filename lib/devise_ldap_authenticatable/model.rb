@@ -108,8 +108,7 @@ module Devise
               resource.email = resource.ldap_get_param(attributes[:password], 'mail').first
             else
               DeviseLdapAuthenticatable::Logger.send "No mail value in LDAP for user #{resource.domain}\\#{resource[auth_key]}"
-              resource = nil
-              return nil
+              return :no_email
             end
           end
 
