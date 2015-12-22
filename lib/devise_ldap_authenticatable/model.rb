@@ -103,16 +103,17 @@ module Devise
             resource.domain = attributes[:domain].downcase
             resource[auth_key] = auth_key_value
             resource.password = attributes[:password]
-
-            if !resource.ldap_get_param(attributes[:password], 'mail').nil? then
-              resource.email = resource.ldap_get_param(attributes[:password], 'mail').first
-            else
-              DeviseLdapAuthenticatable::Logger.send "No mail value in LDAP for user #{resource.domain}\\#{resource[auth_key]}"
-              return :no_email
-            end
+            resource.email = resource.ldap_get_param(attributes[:password], 'mail').first unless resource.ldap_get_param(attributes[:password], 'mail').nil?
           end
 
-          if ::Devise.ldap_create_user && resource.valid_ldap_authentication?(attributes)
+          return :invalid unless resource.valid_ldap_authentication?(attributes)
+          unless resource.email.present?
+            DeviseLdapAuthenticatable::Logger.send "No mail value in LDAP for user #{resource.domain}\\#{resource[auth_key]}"
+            resource = nil
+            return :no_email
+          end
+
+          if ::Devise.ldap_create_user
             if ::Devise.ldap_save_user_attributes.is_a?(Hash)
               ::Devise.ldap_save_user_attributes.each { |ldap_attribute, db_field|
                 attrib = resource.ldap_get_param(attributes[:password], ldap_attribute).first
