@@ -5,7 +5,7 @@ module Devise
 
       def initialize(params = {})
         if ::Devise.ldap_config.is_a?(Proc)
-          ldap_config = ::Devise.ldap_config.call
+          ldap_config = ::Devise.ldap_config.call params
         else
           ldap_config = YAML.load(ERB.new(File.read(::Devise.ldap_config || "#{Rails.root}/config/ldap.yml")).result)[Rails.env][params[:domain].downcase]
         end
@@ -29,12 +29,12 @@ module Devise
         @ldap_auth_username_builder = params[:ldap_auth_username_builder]
 
         @group_base = ldap_config["group_base"]
-        @check_group_membership = ldap_config.has_key?("check_group_membership") ? ldap_config["check_group_membership"] : ::Devise.ldap_check_group_membership
+        @check_group_membership = ldap_config["check_group_membership"].nil? ? ::Devise.ldap_check_group_membership : ldap_config["check_group_membership"]
         @required_groups = ldap_config["required_groups"]
         @required_attributes = ldap_config["require_attribute"]
 
         @ldap.auth ldap_config["admin_user"], ldap_config["admin_password"] if params[:admin]
-        @ldap.auth "#{params[:domain]}\\#{params[:login]}", params[:password] if ldap_config["admin_as_user"]
+        @ldap.auth "#{params[:domain]}\\#{params[:login]}", params[:password] unless params[:admin]
 
         @domain = params[:domain]
         @login = params[:login]
