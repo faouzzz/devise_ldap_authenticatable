@@ -42,7 +42,7 @@ module Devise
 
         # Authenticate a user based on configured attribute keys. Returns the
         # authenticated user if it's valid or nil.
-        def authenticate_with_activedirectory(attributes={}) 
+        def authenticate_with_activedirectory(attributes={})
           username = attributes[login_with]
           password = attributes[:password]
 

@@ -14,7 +14,7 @@ module Devise
     end
 
     def ad_obj
-      @ad_obj ||= klass.find_activedirectory_objs(:objectguid => self.objectguid).first
+      @ad_obj ||= klass.find_activedirectory_objs(:objectguid => self.objectguid).first if klass.find_activedirectory_objs
     end
 
     # Update the attributes of the current object from the AD
@@ -22,7 +22,7 @@ module Devise
     # def activedirectory_sync! params = {}
     #   params[:objectguid] = self.objectguid if params.empty?
     #   @ad_obj ||= params[:object] || klass.find_activedirectory_objs(params).first
-      
+
     #   attr_map.each do |local_attr, active_directory_attr|
     #     self[local_attr] = @ad_obj[active_directory_attr]
     #   end
@@ -57,19 +57,22 @@ module Devise
     def update_children
       #Set the members
       if ad_obj[:member].is_a? Array
-        update_membership(ad_obj[:member], klass.member_users) if defined? klass.member_users
-        update_membership(ad_obj[:member], klass.member_groups) if defined? klass.member_groups
+        update_membership(ad_obj[:member], klass.member_users) if defined? klass.member_users && ::Devise.ad_update_user_memberships
+        update_membership(ad_obj[:member], klass.member_groups) if defined? klass.member_groups && ::Devise.ad_update_group_memberships
       end
     end
 
     def update_parents
       # MemberOf Relationship
-      if ad_obj[:memberof].is_a? Array and defined? klass.memberof
-        update_membership(ad_obj[:memberof], klass.memberof)
+      unless ad_obj.nil?
+        if ad_obj[:memberof].is_a? Array and defined? klass.memberof
+          update_membership(ad_obj[:memberof], klass.memberof)
+        end
       end
     end
 
     def update_membership ad_objs, params
+      return nil if params.nil? || ad_objs.nil?
       # Create the objects of the right type, then sets them
       klass = params[:class]
       field = params[:field]
@@ -93,7 +96,7 @@ module Devise
         ret[:class] = Kernel.const_get(ret[:class_name])
 
         unless ret[:class].include? AdObject
-          raise "#{ret[:class_name]} does not include any of the Devise Active Directory modules.  Please consult the documentation." 
+          raise "#{ret[:class_name]} does not include any of the Devise Active Directory modules.  Please consult the documentation."
         end
 
         return ret
@@ -110,7 +113,7 @@ module Devise
       def devise_ad_member_users field, params = {}
         @member_users = set_devise_ad_options field, params
       end
-  
+
       def devise_model_name
         @devise_model ||= devise_model.name[/.*::(.*)/, 1]
       end
@@ -137,7 +140,7 @@ module Devise
       def find_from_activedirectory local_params = {}
         ad_objs = find_activedirectory_objs local_params
         guids = ad_objs.collect { |obj| obj[:objectguid] }
-        scoped.where(:objectguid => guids)
+        where(:objectguid => guids)
       end
 
       ##
@@ -153,7 +156,7 @@ module Devise
         db_objs_by_guid = {}
 
         #Make a hash map to do quick lookups
-        scoped.where(:objectguid => guids).each do |db_obj|
+        where(:objectguid => guids).each do |db_obj|
           db_objs_by_guid[db_obj.objectguid] = db_obj
         end
 
@@ -179,7 +182,7 @@ module Devise
 
           #Then update the memberships
           #If we're updating all of them, then updating just the parents will do
-          db_objs.each do |obj| 
+          db_objs.each do |obj|
             obj.update_parents
           end
         end
