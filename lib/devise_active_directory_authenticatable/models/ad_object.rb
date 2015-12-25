@@ -41,7 +41,7 @@ module Devise
           self[local_attr] = @ad_obj[active_directory_attr]
         end
 
-        update_memberships
+        # update_memberships
       end
     end
 
@@ -198,8 +198,9 @@ module Devise
       # Sets the username and password for the connection
       # params {:username => 'joe.user', :password => 'top_secret' }
       def set_activedirectory_credentials(params = {})
+        ::Devise.ad_settings = ::Devise.ad_settings.call params[:domain]
         #Used for username and password only
-        ::Devise.ad_settings[:auth].merge! params
+        ::Devise.ad_settings[:auth].merge! params[:auth]
       end
 
       ##
@@ -207,7 +208,7 @@ module Devise
       def activedirectory_connect
         ActiveDirectory::Base.enable_cache if ::Devise.ad_caching
         ActiveDirectory::Base.setup(::Devise.ad_settings)
-        raise DeviseActiveDirectoryAuthenticatable::ActiveDirectoryException, "Invalid Username or Password" unless ActiveDirectory::Base.connected?
+        fail(:invalid) unless ActiveDirectory::Base.connected?
       end
 
       private

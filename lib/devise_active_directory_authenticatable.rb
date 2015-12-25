@@ -72,15 +72,15 @@ module Devise
 
   ##Update the group object from the AD
   mattr_accessor :ad_update_groups
-  @@ad_update_groups = true
+  @@ad_update_groups = false
 
   ##Update the group memberships from the AD, this uses the ancestory gem
   mattr_accessor :ad_update_group_memberships
-  @@ad_update_group_memberships = true
+  @@ad_update_group_memberships = false
 
   ##Update the user memberships from the AD
   mattr_accessor :ad_update_user_memberships
-  @@ad_update_user_memberships = true
+  @@ad_update_user_memberships = false
 
   ##Enable Active Directory caching.  This speeds up group/membership queries significantly.
   mattr_accessor :ad_caching

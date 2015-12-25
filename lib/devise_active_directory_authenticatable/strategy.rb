@@ -28,7 +28,10 @@ module Devise
 
         def valid_params?
           @login_with = ::Devise.authentication_keys.first
-          params[scope] && params[scope][@login_with].present? && params[scope][:password].present?
+          params[scope] &&
+            params[scope][@login_with].present? &&
+            params[scope][:password].present? &&
+            params[scope][:domain].present?
         end
     end
   end

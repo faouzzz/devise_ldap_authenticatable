@@ -19,10 +19,10 @@ module Devise
 
       # Login event handler.  Triggered after authentication.
       # Maybe
-      def login
-        update_parents
-        super if defined? super
-      end
+      # def login
+      #   update_parents
+      #   super if defined? super
+      # end
 
       def authenticate_with_activedirectory params = {}
         params[:username] ||= login_with
@@ -43,11 +43,12 @@ module Devise
         # Authenticate a user based on configured attribute keys. Returns the
         # authenticated user if it's valid or nil.
         def authenticate_with_activedirectory(attributes={})
-          username = attributes[login_with]
+          domain = attributes[:domain]
+          username = "#{domain}\\#{attributes[login_with]}"
           password = attributes[:password]
 
           Logger.send "Attempting to login :#{@login_with} => #{username}"
-          set_activedirectory_credentials :username => username, :password => password
+          set_activedirectory_credentials :domain => domain, {:username => username, :password => password}
           activedirectory_connect
           Logger.send "Attempt Result: #{ActiveDirectory::Base.error}"
 
