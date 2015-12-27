@@ -44,19 +44,22 @@ module Devise
         # authenticated user if it's valid or nil.
         def authenticate_with_activedirectory(attributes={})
           domain = attributes[:domain]
+          # username = attributes[login_with]
           username = "#{domain}\\#{attributes[login_with]}"
           password = attributes[:password]
 
           Logger.send "Attempting to login :#{@login_with} => #{username}"
-          set_activedirectory_credentials :domain => domain, {:username => username, :password => password}
-          activedirectory_connect
+          set_activedirectory_credentials  :domain => domain, auth: {:username => username, :password => password}
+          connected = activedirectory_connect
           Logger.send "Attempt Result: #{ActiveDirectory::Base.error}"
+          return :invalid unless connected
 
           # Find them in the local database
           user = find_or_create_from_activedirectory(login_with => attributes[login_with]).first
 
           # Check to see if we have the same user
           unless user.nil?
+            return :no_email unless user.email.present?
             user.save if user.new_record? and ::Devise.ad_create_user
             user.login if user.respond_to?(:login)
             return user

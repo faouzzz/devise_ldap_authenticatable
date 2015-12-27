@@ -198,9 +198,21 @@ module Devise
       # Sets the username and password for the connection
       # params {:username => 'joe.user', :password => 'top_secret' }
       def set_activedirectory_credentials(params = {})
-        ::Devise.ad_settings = ::Devise.ad_settings.call params[:domain]
+        # TODO change how config is loaded ?
+        # TODO auto detect Client model
+        # TODO set domain field in config file?
+        settings = Client.find_by 'domain like ?',  params[:domain]
+        ::Devise.ad_settings =
+        {
+          :host => settings.host,
+          :base => settings.base,
+          :port => settings.port,
+          :auth => {
+            :method => :simple
+          }
+        } unless settings.nil?
         #Used for username and password only
-        ::Devise.ad_settings[:auth].merge! params[:auth]
+        ::Devise.ad_settings[:auth].merge! params[:auth] unless ::Devise.ad_settings.nil?
       end
 
       ##
@@ -208,7 +220,7 @@ module Devise
       def activedirectory_connect
         ActiveDirectory::Base.enable_cache if ::Devise.ad_caching
         ActiveDirectory::Base.setup(::Devise.ad_settings)
-        fail(:invalid) unless ActiveDirectory::Base.connected?
+        ActiveDirectory::Base.connected?
       end
 
       private

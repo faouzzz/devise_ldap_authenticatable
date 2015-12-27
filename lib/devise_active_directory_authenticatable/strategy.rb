@@ -13,7 +13,10 @@ module Devise
       # success and the authenticated user if everything is okay. Otherwise redirect
       # to sign in page.
       def authenticate!
-        if resource = mapping.to.authenticate_with_activedirectory(params[scope])
+        resource = mapping.to.authenticate_with_activedirectory(params[scope])
+        if resource.is_a? Symbol
+          fail(resource)
+        elsif resource
           success!(resource)
         else
           fail(:invalid)
@@ -23,7 +26,7 @@ module Devise
       protected
 
         def valid_controller?
-          params[:controller] == 'users/sessions'
+          params[:controller] == 'users/sessions' # TODO Auto detect valid controller
         end
 
         def valid_params?
@@ -31,7 +34,7 @@ module Devise
           params[scope] &&
             params[scope][@login_with].present? &&
             params[scope][:password].present? &&
-            params[scope][:domain].present?
+            params[scope][:domain].present? && Client.find_by( 'domain like ?', params[scope][:domain]) # TODO auto detect Client model
         end
     end
   end
