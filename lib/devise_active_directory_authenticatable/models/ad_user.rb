@@ -44,7 +44,6 @@ module Devise
         # authenticated user if it's valid or nil.
         def authenticate_with_activedirectory(attributes={})
           domain = attributes[:domain]
-          # username = attributes[login_with]
           username = "#{domain}\\#{attributes[login_with]}"
           password = attributes[:password]
 
@@ -60,7 +59,7 @@ module Devise
           # Check to see if we have the same user
           unless user.nil?
             return :no_email unless user.email.present?
-            user.domain = domain.upcase
+            user.domain = domain
             user.save if user.new_record? and ::Devise.ad_create_user
             user.login if user.respond_to?(:login)
             return user
